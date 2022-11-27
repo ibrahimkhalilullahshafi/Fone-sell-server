@@ -15,15 +15,35 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run() {
     try {
-        const categoriesCollection = client.db('foneSell').collection('categories');
+        const categoryCollection = client.db('foneSell').collection('categories');
         const productsCollection = client.db('foneSell').collection('products');
+        console.log(categoryCollection);
 
 
-        app.get('/categories', async (req, res) => {
+        app.get('/category', async (req, res) => {
             const query = {}
-            const cursor = categoriesCollection.find(query);
-            const categories = await cursor.toArray();
-            res.send(categories);
+            const cursor = categoryCollection.find(query);
+            const category = await cursor.toArray();
+            res.send(category);
+        });
+        // app.get('/products', async (req, res) => {
+        //     const query = {}
+        //     const cursor = productsCollection.find(query);
+        //     const products = await cursor.toArray();
+        //     res.send(products);
+        // });
+
+        // app.get('/products', async (req, res) => {
+        //     res.send(productsCollection);
+        // });
+
+        app.get("/category/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { categoryId: id };
+            // console.log(q);
+            const cursor = productsCollection.find(query);
+            const product = await cursor.toArray();
+            res.send(product);
         });
     }
     finally {
