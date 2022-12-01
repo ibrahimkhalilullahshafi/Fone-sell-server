@@ -17,7 +17,6 @@ async function run() {
     try {
         const categoryCollection = client.db('foneSell').collection('categories');
         const productsCollection = client.db('foneSell').collection('products');
-        console.log(categoryCollection);
 
 
         app.get('/category', async (req, res) => {
@@ -26,25 +25,25 @@ async function run() {
             const category = await cursor.toArray();
             res.send(category);
         });
-        // app.get('/products', async (req, res) => {
-        //     const query = {}
-        //     const cursor = productsCollection.find(query);
-        //     const products = await cursor.toArray();
-        //     res.send(products);
-        // });
 
-        // app.get('/products', async (req, res) => {
-        //     res.send(productsCollection);
-        // });
 
         app.get("/category/:id", async (req, res) => {
             const id = req.params.id;
             const query = { categoryId: id };
-            // console.log(q);
             const cursor = productsCollection.find(query);
             const product = await cursor.toArray();
             res.send(product);
         });
+
+
+        app.post('/products', async (req, res) => {
+            const product = req.body.addProductInfo;
+            console.log(product);
+            const result = await productsCollection.insertOne(product);
+            res.send(result)
+        })
+
+
     }
     finally {
 
