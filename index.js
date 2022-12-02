@@ -40,6 +40,15 @@ async function run() {
         });
 
 
+        app.get('/myproducts', async (req, res) => {
+            const email = req.query.buyersEmail;
+            const query = { email: email };
+            const cursor = productsCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products);
+        });
+
+
         app.get('/orders', async (req, res) => {
             const email = req.query.buyersEmail;
             const query = { email: email };
