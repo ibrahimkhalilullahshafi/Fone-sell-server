@@ -65,6 +65,7 @@ async function run() {
         });
 
 
+
         app.get('/allbuyer', async (req, res) => {
             const query = { role: "Buyer" };
             const cursor = usersCollection.find(query);
