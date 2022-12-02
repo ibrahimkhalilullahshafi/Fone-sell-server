@@ -4,6 +4,8 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const axios = require('axios').default;
+const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 app.use(cors());
@@ -17,6 +19,8 @@ async function run() {
     try {
         const categoryCollection = client.db('foneSell').collection('categories');
         const productsCollection = client.db('foneSell').collection('products');
+        const ordersCollection = client.db('foneSell').collection('orders');
+        const usersCollection = client.db('foneSell').collection('users');
 
 
         app.get('/category', async (req, res) => {
@@ -36,10 +40,47 @@ async function run() {
         });
 
 
+        app.get('/orders', async (req, res) => {
+            const email = req.query.buyersEmail;
+            const query = { email: email };
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+                return res.send({ accessToken: token });
+            }
+            res.status(403).send({ accessToken: '' })
+        });
+
+
         app.post('/products', async (req, res) => {
             const product = req.body.addProductInfo;
             console.log(product);
             const result = await productsCollection.insertOne(product);
+            res.send(result)
+        });
+
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            console.log(order);
+            const result = await ordersCollection.insertOne(order);
+            res.send(result)
+        });
+
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            console.log(user);
+            const result = await usersCollection.insertOne(user);
             res.send(result)
         })
 
